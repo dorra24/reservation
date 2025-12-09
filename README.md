@@ -2,29 +2,7 @@
 Software in C for managing room reservations
 # Gestion de Réservations de Salles
 
-Ce projet est une application en C permettant de gérer des **salles**, des **clients** et des **réservations**. Il inclut la gestion des disponibilités, des capacités, des tarifs, des remises et des statistiques.
-
-## Fonctionnalités
-
-### Gestion des Salles
-- Ajouter de nouvelles salles avec nom, capacité, tarif horaire et équipements.
-- Afficher la liste des salles existantes.
-
-### Gestion des Réservations
-- Ajouter une réservation avec nom du client, salle, date, horaires et nombre de personnes.
-- Vérifier automatiquement la **disponibilité** et la **capacité**.
-- Calcul automatique du **tarif** et application d'une **remise** après un certain nombre de réservations.
-- Afficher toutes les réservations ou rechercher par client.
-- Générer une **facture** pour une réservation.
-- Gestion des réservations avec **pile** (LIFO) et **file** (FIFO) pour manipulations supplémentaires.
-
-### Gestion des Clients
-- Ajouter et gérer les informations des clients : id, nom, email, téléphone.
-
-### Statistiques
-- Chiffre d'affaires par salle.
-- Nombre de réservations par mois.
-- Salles les plus populaires.
+Ce projet est une application en C permettant de gérer des **salles**, des **clients** et des **réservations** ainsi qu’une liste d’attente via une pile et une file.
 
 ## Structures principales
 - `Salle` : nom, capacité, tarif horaire, équipements.
@@ -32,4 +10,58 @@ Ce projet est une application en C permettant de gérer des **salles**, des **cl
 - `Client` : id, nom, email, téléphone.
 - `Pile` et `File` : pour empiler/dépiler et enfiler/défiler les réservations.
 
+- ## ## Structure du projet
+├── main.c
+├── fonction.h
+├── fonctionss.c
+└── README.md
+
+- ## ## Fonctionnalités principales
+
+### ✔ Disponibilité
+Vérifie automatiquement si une salle est libre à la date et aux heures demandées, afin d’éviter les conflits d’horaires.
+
+### ✔ Capacité
+Compare le nombre de personnes de la réservation avec la capacité maximale de la salle.
+
+### ✔ Création de réservation
+Lorsqu'une réservation est créée, plusieurs contrôles sont effectués :
+- validation des heures (heure fin > heure début)
+- vérification de la disponibilité
+- vérification de la capacité
+- contrôle de la date
+- calcul automatique du tarif
+- en cas d’erreur → stockage dans la **pile**
+- en cas de réservation valide mais impossible → ajout à la **file d’attente**
+
+### ✔ Calcul du tarif total
+Le tarif est automatiquement calculé :  
+**tarif horaire × durée de réservation**
+
+### ✔ Facture
+Génération d’un fichier `.txt` contenant :
+- les informations du client  
+- la salle réservée  
+- la date et l’horaire  
+- le tarif total
+
+### ✔ Statistiques
+Plusieurs statistiques sont générées automatiquement :
+- chiffre d’affaires par salle
+- nombre de réservations par mois
+- salle la plus populaire (max de réservations)
+
+### ✔ Recherche client
+Affiche toutes les réservations faites par un client donné.
+
+### ✔ Remise
+Une réduction de **10%** est appliquée automatiquement si un client dépasse **5 réservations**.
+### ✔ liste d’attente (File)
+La file (File) stocke les réservations valides mais non réalisables immédiatement
+
+
+## Auteurs
+Projet développé par **Dorra Zouari**, **Rania Hafsa** **Gatri Yomn**.
+
+**Langage utilisé :** `C`
 
