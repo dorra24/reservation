@@ -2,8 +2,9 @@
 Software in C for managing room reservations
 # Gestion de Réservations de Salles
 
-Ce projet est une application en C permettant de gérer des **salles** et des **réservations** pour des clients. Il inclut la gestion des disponibilités, des capacités, des tarifs et des statistiques.
+Ce projet est une application en C permettant de gérer des **salles**, des **clients** et des **réservations**. Il inclut la gestion des disponibilités, des capacités, des tarifs, des remises et des statistiques.
 
+## Fonctionnalités
 
 ### Gestion des Salles
 - Ajouter de nouvelles salles avec nom, capacité, tarif horaire et équipements.
@@ -17,14 +18,18 @@ Ce projet est une application en C permettant de gérer des **salles** et des **
 - Générer une **facture** pour une réservation.
 - Gestion des réservations avec **pile** (LIFO) et **file** (FIFO) pour manipulations supplémentaires.
 
+### Gestion des Clients
+- Ajouter et gérer les informations des clients : id, nom, email, téléphone.
+
 ### Statistiques
 - Chiffre d'affaires par salle.
 - Nombre de réservations par mois.
 - Salles les plus populaires.
 
 ## Structures principales
--Salle : nom, capacité, tarif horaire, équipements.
--Reservation : id, client, salle, date, horaires, nombre de personnes, tarif, statut.
--Client : id, nom, email, téléphone.
--Pile et File : pour empiler/dépiler et enfiler/défiler les réservations.
+- `Salle` : nom, capacité, tarif horaire, équipements.
+- `Reservation` : id, client, salle, date, horaires, nombre de personnes, tarif, statut.
+- `Client` : id, nom, email, téléphone.
+- `Pile` et `File` : pour empiler/dépiler et enfiler/défiler les réservations.
+
 
