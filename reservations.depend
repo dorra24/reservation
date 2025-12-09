@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1765304168 source:c:\users\zouar\onedrive\desktop\projet\reservations\fonctionss.c
+	"fonction.h"
+	<stdlib.h>
+
+1765304168 c:\users\zouar\onedrive\desktop\projet\reservations\fonction.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1765304944 source:c:\users\zouar\onedrive\desktop\projet\reservations\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"fonction.h"
+
