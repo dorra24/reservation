@@ -23,8 +23,8 @@ Ce projet est une application en C permettant de gérer des **salles** et des **
 - Salles les plus populaires.
 
 ## Structures principales
-- `Salle` 
-- `Reservation` 
-- `client`
-- `Pile` et `File` : pour empiler/dépiler et enfiler/défiler les réservations.
+-Salle : nom, capacité, tarif horaire, équipements.
+-Reservation : id, client, salle, date, horaires, nombre de personnes, tarif, statut.
+-Client : id, nom, email, téléphone.
+-Pile et File : pour empiler/dépiler et enfiler/défiler les réservations.
 
