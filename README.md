@@ -5,10 +5,10 @@ Software in C for managing room reservations
 Ce projet est une application en C permettant de gérer des **salles**, des **clients** et des **réservations** ainsi qu’une liste d’attente via une pile et une file.
 
 ## Structures principales
-- `Salle` : nom, capacité, tarif horaire, équipements.
-- `Reservation` : id, client, salle, date, horaires, nombre de personnes, tarif, statut.
-- `Client` : id, nom, email, téléphone.
-- `Pile` et `File` : pour empiler/dépiler et enfiler/défiler les réservations.
+- `Salle` 
+- `Reservation`
+- `Client` 
+- `Pile` et `File` 
 
 - ## ## Structure du projet
 ├── main.c
@@ -31,7 +31,6 @@ Lorsqu'une réservation est créée, plusieurs contrôles sont effectués :
 - vérification de la capacité
 - contrôle de la date
 - calcul automatique du tarif
-- en cas d’erreur → stockage dans la **pile**
 - en cas de réservation valide mais impossible → ajout à la **file d’attente**
 
 ### ✔ Calcul du tarif total
@@ -48,16 +47,16 @@ Génération d’un fichier `.txt` contenant :
 ### ✔ Statistiques
 Plusieurs statistiques sont générées automatiquement :
 - chiffre d’affaires par salle
-- nombre de réservations par mois
+- nombre de réservations par mois d'une année
 - salle la plus populaire (max de réservations)
 
 ### ✔ Recherche client
-Affiche toutes les réservations faites par un client donné.
+Affiche toutes les réservations faites par un client donné(avec id).
 
 ### ✔ Remise
 Une réduction de **10%** est appliquée automatiquement si un client dépasse **5 réservations**.
 ### ✔ liste d’attente (File)
-La file (File) stocke les réservations valides mais non réalisables immédiatement
+La file (File) stocke les réservations lorqu'il ya un conflit horaire dans une file.
 
 
 ## Auteurs
