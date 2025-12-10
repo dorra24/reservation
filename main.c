@@ -3,6 +3,11 @@
 #include <string.h>
 #include "fonction.h"
 
+#define MAX_CLIENTS 1000
+
+
+// Menu gestion des salles
+
 void menu_salles(Salle salles[], int *nb_salles) {
     int choix;
     char buf[16];
@@ -21,16 +26,17 @@ void menu_salles(Salle salles[], int *nb_salles) {
                 }
                 Salle s;
                 printf("Nom de la salle : ");
-                fgets(s.nom, 50, stdin);
+                fgets(s.nom, sizeof(s.nom), stdin);
                 s.nom[strcspn(s.nom, "\n")] = 0;
                 printf("Capacite : ");
                 scanf("%d", &s.capacite);
                 printf("Tarif horaire : ");
                 scanf("%f", &s.tarif_horaire);
-                getchar();
+                getchar(); // nettoyer le buffer
                 printf("Equipements : ");
-                fgets(s.equipements, 200, stdin);
+                fgets(s.equipements, sizeof(s.equipements), stdin);
                 s.equipements[strcspn(s.equipements, "\n")] = 0;
+
                 salles[*nb_salles] = s;
                 (*nb_salles)++;
                 printf("Salle ajoutee.\n");
@@ -48,7 +54,10 @@ void menu_salles(Salle salles[], int *nb_salles) {
     } while(choix != 3);
 }
 
-void menu_reservations(Reservation reservations[], int *nb_res, Salle salles[], int nb_salles) {
+// -----------------------------------------
+// Menu gestion des reservations
+// -----------------------------------------
+void menu_reservations(Reservation reservations[], int *nb_res, Salle salles[], int nb_salles, Client clients[], int *nb_clients) {
     int choix;
     char buf[16];
     static int compteur_id = 1;
@@ -78,39 +87,89 @@ void menu_reservations(Reservation reservations[], int *nb_res, Salle salles[], 
             case 1: {
                 Reservation r;
                 r.id = compteur_id++;
-                printf("Nom client : "); fgets(r.nom_client,50,stdin); r.nom_client[strcspn(r.nom_client,"\n")]=0;
-                printf("Salle : "); fgets(r.salle,50,stdin); r.salle[strcspn(r.salle,"\n")]=0;
 
+                // ----- ID client -----
+                int id_client;
+                printf("ID Client : ");
+                scanf("%d", &id_client);
+                getchar();
+
+                int pos = trouverClient(clients, *nb_clients, id_client);
+
+                if(pos == -1) {
+                    Client c;
+                    c.id_client = id_client;
+
+                    printf("Nom client : ");
+                    fgets(c.nom_client, sizeof(c.nom_client), stdin);
+                    c.nom_client[strcspn(c.nom_client, "\n")] = 0;
+
+                    printf("Email : ");
+                    fgets(c.email, sizeof(c.email), stdin);
+                    c.email[strcspn(c.email, "\n")] = 0;
+
+                    printf("Telephone : ");
+                    fgets(c.telephone, sizeof(c.telephone), stdin);
+                    c.telephone[strcspn(c.telephone, "\n")] = 0;
+
+                    clients[*nb_clients] = c;
+                    (*nb_clients)++;
+
+                    strcpy(r.nom_client, c.nom_client);
+                } else {
+                    printf("Client trouve : %s\n", clients[pos].nom_client);
+                    strcpy(r.nom_client, clients[pos].nom_client);
+                }
+                r.id_client = id_client;
+
+                // ----- Salle -----
+                printf("Salle : ");
+                fgets(r.salle, sizeof(r.salle), stdin);
+                r.salle[strcspn(r.salle, "\n")] = 0;
+
+                // ----- Date -----
                 do {
                     printf("Date (YYYY-MM-DD) : ");
-                    fgets(r.date,20,stdin);
-                    r.date[strcspn(r.date,"\n")]=0;
-                    if(!dateValide(r.date)) printf("Date invalide ! Reessayez.\n");
+                    fgets(r.date, sizeof(r.date), stdin);
+                    r.date[strcspn(r.date, "\n")] = 0;
+                    if(!dateValide(r.date))
+                        printf("Date invalide ! Reessayez.\n");
                 } while(!dateValide(r.date));
 
-                printf("Heure debut : "); scanf("%d",&r.heure_debut);
-                printf("Heure fin : "); scanf("%d",&r.heure_fin);
-                printf("Nombre personnes : "); scanf("%d",&r.nombre_personnes);
+                // ----- Heure -----
+                printf("Heure debut : ");
+                scanf("%d", &r.heure_debut);
+                printf("Heure fin : ");
+                scanf("%d", &r.heure_fin);
+
+                // ----- Nombre de personnes -----
+                printf("Nombre personnes : ");
+                scanf("%d", &r.nombre_personnes);
                 getchar();
+
                 r.statut = CONFIRMED;
 
-                int code = creerReservation(r,reservations,nb_res,salles,nb_salles);
+                // ----- Creation de la reservation -----
+                int code = creerReservation(r, reservations, nb_res, salles, nb_salles);
 
                 if(code == 0) {
-                    reservations[*nb_res-1].tarif = appliquerRemise(reservations, *nb_res, &reservations[*nb_res-1]);
-                    printf("Reservation ajoutee. Tarif final: %.2f\n", reservations[*nb_res-1].tarif);
-                    empiler(&pile, &reservations[*nb_res-1]);
-                    enfiler(&file, &reservations[*nb_res-1]);
-                } else if(code == 1) {
-                    printf("Salle introuvable !\n");
-                } else if(code == 2) {
-                    printf("Capacite insuffisante !\n");
-                } else if(code == 3) {
-                    printf("Conflit horaire, ajoutee à la liste d'attente.\n");
-                    enfiler(&liste_attente, &r);
-                } else if(code == 4) {
-                    printf("Heure invalide !\n");
+                    float tarif_initial = reservations[*nb_res - 1].tarif;
+                    reservations[*nb_res - 1].tarif =
+                        appliquerRemise(reservations, *nb_res, id_client, tarif_initial);
+
+                    printf("Reservation ajoutee. Tarif final: %.2f\n",
+                           reservations[*nb_res - 1].tarif);
+
+                    empiler(&pile, &reservations[*nb_res - 1]);
+                    enfiler(&file, &reservations[*nb_res - 1]);
                 }
+                else if(code == 1) printf("Salle introuvable !\n");
+                else if(code == 2) printf("Capacite insuffisante !\n");
+                else if(code == 3) {
+                    printf("Conflit horaire, ajoutée à la liste d'attente.\n");
+                    enfiler(&liste_attente, &r);
+                }
+                else if(code == 4) printf("Heure invalide !\n");
 
                 break;
             }
@@ -118,16 +177,27 @@ void menu_reservations(Reservation reservations[], int *nb_res, Salle salles[], 
             case 2:
                 printf("\n=== Liste des Reservations ===\n");
                 for(int i=0;i<*nb_res;i++)
-                    printf("ID:%d | %s | Salle:%s | Date:%s | %d-%d | %d pers | Tarif:%.2f | Statut:%d\n",
-                           reservations[i].id, reservations[i].nom_client, reservations[i].salle,
+                    printf("ID:%d | ID Client:%d | %s | Salle:%s | Date:%s | %d-%d | %d pers | Tarif:%.2f | Statut:%d\n",
+                           reservations[i].id, reservations[i].id_client, reservations[i].nom_client, reservations[i].salle,
                            reservations[i].date, reservations[i].heure_debut, reservations[i].heure_fin,
                            reservations[i].nombre_personnes, reservations[i].tarif, reservations[i].statut);
                 break;
 
             case 3: {
-                char nom[50];
-                printf("Nom du client : "); fgets(nom,50,stdin); nom[strcspn(nom,"\n")]=0;
-                rechercherReservationsClient(nom,reservations,*nb_res);
+                int id;
+                printf("ID Client : ");
+                scanf("%d", &id);
+                getchar();
+                int trouve = 0;
+                for(int i=0;i<*nb_res;i++)
+                    if(reservations[i].id_client == id) {
+                        printf("ID:%d | %s | Salle:%s | Date:%s | %d-%d | %d pers | Tarif:%.2f\n",
+                               reservations[i].id, reservations[i].nom_client, reservations[i].salle,
+                               reservations[i].date, reservations[i].heure_debut, reservations[i].heure_fin,
+                               reservations[i].nombre_personnes, reservations[i].tarif);
+                        trouve = 1;
+                    }
+                if(!trouve) printf("Aucune reservation pour ce client.\n");
                 break;
             }
 
@@ -141,21 +211,19 @@ void menu_reservations(Reservation reservations[], int *nb_res, Salle salles[], 
                 break;
             }
 
-            case 5: {
+            case 5:
                 if(!pileVide(&pile)) {
                     Reservation *r = depiler(&pile);
-                    printf("Depile : %s dans salle %s\n", r->nom_client,r->salle);
+                    printf("Depile : %s dans salle %s\n", r->nom_client, r->salle);
                 } else printf("Pile vide.\n");
                 break;
-            }
 
-            case 6: {
+            case 6:
                 if(!fileVide(&file)) {
                     Reservation *r = defiler(&file);
-                    printf("Defile : %s dans salle %s\n", r->nom_client,r->salle);
+                    printf("Defile : %s dans salle %s\n", r->nom_client, r->salle);
                 } else printf("File vide.\n");
                 break;
-            }
 
             case 7: {
                 printf("\n=== Liste d'attente ===\n");
@@ -176,29 +244,12 @@ void menu_reservations(Reservation reservations[], int *nb_res, Salle salles[], 
             default: printf("Choix invalide.\n");
         }
 
-        int taille_attente = liste_attente.taille;
-        for(int i=0; i<taille_attente; i++) {
-            Reservation *r = defiler(&liste_attente);
-            int code = creerReservation(*r,reservations,nb_res,salles,nb_salles);
-            if(code == 0) {
-                reservations[*nb_res-1].tarif = appliquerRemise(reservations, *nb_res, &reservations[*nb_res-1]);
-                printf("Liste d'attente : reservation validee pour %s dans salle %s\n", r->nom_client, r->salle);
-                empiler(&pile, &reservations[*nb_res-1]);
-                enfiler(&file, &reservations[*nb_res-1]);
-            } else if(code == 3) {
-                enfiler(&liste_attente, r);
-            } else if(code == 1) {
-                printf("Liste d'attente : salle introuvable pour %s\n", r->nom_client);
-            } else if(code == 2) {
-                printf("Liste d'attente : capacité insuffisante pour %s\n", r->nom_client);
-            } else if(code == 4) {
-                printf("Liste d'attente : heure invalide pour %s\n", r->nom_client);
-            }
-        }
-
-    } while(choix!=8);
+    } while(choix != 8);
 }
 
+// -----------------------------------------
+// Menu statistiques
+// -----------------------------------------
 void menu_stats(Reservation reservations[], int nb_res, Salle salles[], int nb_salles) {
     int choix;
     char buf[16];
@@ -217,6 +268,9 @@ void menu_stats(Reservation reservations[], int nb_res, Salle salles[], int nb_s
     } while(choix!=4);
 }
 
+// -----------------------------------------
+// MAIN
+// -----------------------------------------
 int main() {
     Salle salles[MAX_SALLE] = {
         {"A",50,100.0,"Projecteur,Wifi"},
@@ -231,6 +285,9 @@ int main() {
     Reservation reservations[MAX_RES];
     int nb_res = 0;
 
+    Client clients[MAX_CLIENTS];
+    int nb_clients = 0;
+
     int choix;
     char buf[16];
 
@@ -241,18 +298,12 @@ int main() {
         choix = atoi(buf);
         switch(choix) {
             case 1: menu_salles(salles,&nb_salles); break;
-            case 2: menu_reservations(reservations,&nb_res,salles,nb_salles); break;
+            case 2: menu_reservations(reservations,&nb_res,salles,nb_salles,clients,&nb_clients); break;
             case 3: menu_stats(reservations,nb_res,salles,nb_salles); break;
             case 4: printf("Au revoir !\n"); break;
             default: printf("Choix invalide.\n");
         }
-    } while(choix!=4);
+    } while(choix != 4);
 
     return 0;
 }
-
-
-
-
-
-
