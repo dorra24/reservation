@@ -39,6 +39,7 @@ typedef struct {
 /* ---------- Fonctions principales ---------- */
 int Disponibilite(char *nomSalle, char *date, int hDebut, int hFin, Reservation reservations[], int nb_res);
 int verifCapacite(int nombre_personnes, Salle salles[], int nb_salles, char *nomSalle);
+int trouverSalle(Salle salles[], int nb_salles, const char *nom);
 int creerReservation(Reservation r, Reservation reservations[], int *nb_res, Salle salles[], int nb_salles);
 float calculerTarifTotal(Reservation *r, Salle salles[], int nb_salles);
 void genererFacture(Reservation r, const char *nomFichier);
@@ -47,6 +48,7 @@ void reservationsParMois(Reservation reservations[], int nb_reservations);
 void sallesPopulaires(Reservation reservations[], int nb_reservations, Salle salles[], int nb_salles);
 void rechercherReservationsClient(char *nom_client, Reservation reservations[], int nb_res);
 float appliquerRemise(Reservation reservations[], int nb_res, Reservation *r);
+int dateValide(const char *date);
 
 /* ---------- Pile ---------- */
 typedef struct {
@@ -65,11 +67,13 @@ typedef struct {
     int rear;
     int taille;
 } File;
+
 void initFile(File *f);
 int enfiler(File *f, Reservation *r);
 Reservation* defiler(File *f);
 int fileVide(File *f);
 
-int dateValide(const char *date);
+
 
 #endif // FONCTION_H_INCLUDED
+
