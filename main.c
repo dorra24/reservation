@@ -88,11 +88,16 @@ void menu_reservations(Reservation reservations[], int *nb_res, Salle salles[], 
                 Reservation r;
                 r.id = compteur_id++;
 
-                // ----- ID client -----
                 int id_client;
-                printf("ID Client : ");
-                scanf("%d", &id_client);
-                getchar();
+                do {
+                    printf("ID Client: ");
+                    scanf("%d", &id_client);
+                    getchar();
+                    if(!idValide(id_client))
+                        printf("ID invalide ! Il doit contenir exactement 8 chiffres.\n");
+                } while(!idValide(id_client));
+
+
 
                 int pos = trouverClient(clients, *nb_clients, id_client);
 
@@ -307,3 +312,4 @@ int main() {
 
     return 0;
 }
+
