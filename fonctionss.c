@@ -20,23 +20,42 @@ int verifCapacite(int nombre_personnes, Salle salles[], int nb_salles, char *nom
             return nombre_personnes <= salles[i].capacite;
     return 0;
 }
-
+/* ---------- trouver salle---------- */
+int trouverSalle(Salle salles[], int nb_salles, const char *nom) {
+    for(int i = 0; i < nb_salles; i++) {
+        if(strcmp(salles[i].nom, nom) == 0)
+            return i;
+    }
+    return -1;
+}
 /* ---------- Création réservation ---------- */
-int creerReservation(Reservation r, Reservation reservations[], int *nb_res, Salle salles[], int nb_salles) {
-    if(r.heure_fin <= r.heure_debut) return 1;
-    if(!verifCapacite(r.nombre_personnes, salles, nb_salles, r.salle)) return 1;
-    if(!Disponibilite(r.salle, r.date, r.heure_debut, r.heure_fin, reservations, *nb_res)) return 1;
+int creerReservation(Reservation r, Reservation reservations[], int *nb_res,
+                     Salle salles[], int nb_salles)
+{
+    int indexSalle = trouverSalle(salles, nb_salles, r.salle);
+    if(indexSalle == -1) return 1;
+    if(r.heure_fin <= r.heure_debut) return 4;
+    if(r.nombre_personnes > salles[indexSalle].capacite) return 2;
 
-    for(int i = 0; i < nb_salles; i++)
-        if(strcmp(salles[i].nom, r.salle) == 0) {
-            r.tarif = salles[i].tarif_horaire * (r.heure_fin - r.heure_debut);
-            break;
+    for(int i = 0; i < *nb_res; i++) {
+        if(strcmp(reservations[i].salle, r.salle) == 0 &&
+           strcmp(reservations[i].date, r.date) == 0)
+        {
+            int d1 = r.heure_debut;
+            int f1 = r.heure_fin;
+            int d2 = reservations[i].heure_debut;
+            int f2 = reservations[i].heure_fin;
+            if(!(f1 <= d2 || d1 >= f2)) return 3;
         }
+    }
 
+    r.tarif = salles[indexSalle].tarif_horaire * (r.heure_fin - r.heure_debut);
     reservations[*nb_res] = r;
     (*nb_res)++;
     return 0;
 }
+
+
 
 /* ---------- Calcul tarif ---------- */
 float calculerTarifTotal(Reservation *r, Salle salles[], int nb_salles) {
@@ -109,7 +128,7 @@ void rechercherReservationsClient(char *nom_client, Reservation reservations[], 
                    reservations[i].id, reservations[i].salle, reservations[i].date,
                    reservations[i].heure_debut, reservations[i].heure_fin, reservations[i].tarif);
         }
-    if(!trouve) printf("Aucune réservation trouvée pour %s\n", nom_client);
+    if(!trouve) printf("Aucune réservation trouvee pour %s\n", nom_client);
 }
 
 /* ---------- Remise ---------- */
@@ -151,4 +170,3 @@ int dateValide(const char *date) {
     }
     return 1;
 }
-
