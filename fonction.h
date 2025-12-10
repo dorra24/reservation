@@ -52,6 +52,7 @@ void rechercherReservationsClient(char *nom_client, Reservation reservations[], 
 float appliquerRemise(Reservation reservations[], int nb_res, int id_client, float tarif_initial);
 int trouverClient(Client clients[], int nb_clients, int id_client);
 int dateValide(const char *date);
+int idValide(int id);
 
 //pile
 typedef struct {
@@ -79,3 +80,4 @@ int fileVide(File *f);
 
 
 #endif // FONCTION_H_INCLUDED
+
