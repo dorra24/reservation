@@ -179,3 +179,8 @@ int trouverClient(Client clients[], int nb_clients, int id_client){
     for(int i=0;i<nb_clients;i++) if(clients[i].id_client==id_client) return i;
     return -1;
 }
+int idValide(int id) {
+    return (id >= 10000000 && id <= 99999999);
+}
+
+
