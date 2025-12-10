@@ -170,3 +170,4 @@ int dateValide(const char *date) {
     }
     return 1;
 }
+
