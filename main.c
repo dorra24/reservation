@@ -7,7 +7,6 @@
 
 
 // Menu gestion des salles
-
 void menu_salles(Salle salles[], int *nb_salles) {
     int choix;
     char buf[16];
@@ -54,9 +53,8 @@ void menu_salles(Salle salles[], int *nb_salles) {
     } while(choix != 3);
 }
 
-// -----------------------------------------
+
 // Menu gestion des reservations
-// -----------------------------------------
 void menu_reservations(Reservation reservations[], int *nb_res, Salle salles[], int nb_salles, Client clients[], int *nb_clients) {
     int choix;
     char buf[16];
@@ -252,9 +250,9 @@ void menu_reservations(Reservation reservations[], int *nb_res, Salle salles[], 
     } while(choix != 8);
 }
 
-// -----------------------------------------
+
 // Menu statistiques
-// -----------------------------------------
+
 void menu_stats(Reservation reservations[], int nb_res, Salle salles[], int nb_salles) {
     int choix;
     char buf[16];
@@ -312,4 +310,5 @@ int main() {
 
     return 0;
 }
+
 
